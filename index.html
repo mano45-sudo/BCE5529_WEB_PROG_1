@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hospital Appointment Form</title>
+
+    <style>
+        body {
+            font-family: Arial;
+        }
+
+        fieldset {
+            margin: 15px;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        /* Popup styling using z-index */
+        #popup {
+            display: none;
+            position: fixed;
+            top: 30%;
+            left: 35%;
+            background: lightgreen;
+            padding: 20px;
+            border: 2px solid green;
+            z-index: 9999;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Hospital Appointment Form</h2>
+
+<form id="myForm" onsubmit="return validateForm()">
+
+    <!-- Personal Details -->
+    <fieldset>
+        <legend>Personal Details</legend>
+
+        Full Name:
+        <input type="text" id="name"><br><br>
+
+        Mobile Number:
+        <input type="text" id="mobile"><br><br>
+
+        Gender:
+        <input type="radio" name="gender" value="Male">Male
+        <input type="radio" name="gender" value="Female">Female
+        <input type="radio" name="gender" value="Other">Other<br><br>
+
+        Appointment Date:
+        <input type="date" id="date">
+    </fieldset>
+
+    <!-- Appointment Details -->
+    <fieldset>
+        <legend>Appointment Details</legend>
+
+        Department:
+        <select id="dept">
+            <option value="">--Select--</option>
+            <option>Cardiology</option>
+            <option>Ortho</option>
+            <option>Neurology</option>
+        </select><br><br>
+
+        Available Doctors:
+        <select id="doctor" multiple>
+            <option>Dr. A</option>
+            <option>Dr. B</option>
+            <option>Dr. C</option>
+        </select><br><br>
+
+        Time Slot:
+        <input type="radio" name="time" value="Morning">Morning
+        <input type="radio" name="time" value="Afternoon">Afternoon
+        <input type="radio" name="time" value="Evening">Evening
+    </fieldset>
+
+    <!-- Symptoms -->
+    <fieldset>
+        <legend>Symptoms</legend>
+
+        <textarea id="symptoms" rows="4" cols="40"></textarea>
+    </fieldset>
+
+    <br>
+
+    <input type="checkbox" id="agree"> I agree to hospital policies<br><br>
+
+    <input type="submit" value="Submit">
+
+    <p id="errorMsg" class="error"></p>
+
+</form>
+
+<!-- Popup -->
+<div id="popup">
+    <h3>Appointment Booked Successfully!</h3>
+    <button onclick="closePopup()">OK</button>
+</div>
+
+<script>
+function validateForm() {
+    let error = "";
+
+    let name = document.getElementById("name").value;
+    let mobile = document.getElementById("mobile").value;
+    let date = document.getElementById("date").value;
+    let symptoms = document.getElementById("symptoms").value;
+    let agree = document.getElementById("agree").checked;
+
+    // Name validation
+    if (name == "") {
+        error += "Name cannot be empty<br>";
+    }
+
+    // Mobile validation (10 digits regex)
+    let mobilePattern = /^[0-9]{10}$/;
+    if (!mobilePattern.test(mobile)) {
+        error += "Mobile must be exactly 10 digits<br>";
+    }
+
+    // Date validation (no past date)
+    let today = new Date().toISOString().split("T")[0];
+    if (date < today) {
+        error += "Date cannot be in the past<br>";
+    }
+
+    // Doctor selection validation
+    let doctor = document.getElementById("doctor");
+    let selected = false;
+    for (let i = 0; i < doctor.options.length; i++) {
+        if (doctor.options[i].selected) {
+            selected = true;
+        }
+    }
+    if (!selected) {
+        error += "Select at least one doctor<br>";
+    }
+
+    // Symptoms validation
+    if (symptoms.length < 30) {
+        error += "Symptoms must be at least 30 characters<br>";
+    }
+
+    // Agreement validation
+    if (!agree) {
+        error += "You must agree to policies<br>";
+    }
+
+    // Radio validation using FOR LOOP
+    let gender = document.getElementsByName("gender");
+    let genderSelected = false;
+
+    for (let i = 0; i < gender.length; i++) {
+        if (gender[i].checked) {
+            genderSelected = true;
+        }
+    }
+
+    if (!genderSelected) {
+        error += "Select gender<br>";
+    }
+
+    // If error exists
+    if (error != "") {
+        document.getElementById("errorMsg").innerHTML = error;
+        return false;
+    }
+
+    // Success → Change background color
+    document.body.style.backgroundColor = "lightgreen";
+
+    // Show popup
+    document.getElementById("popup").style.display = "block";
+
+    return false;
+}
+
+// Close popup
+function closePopup() {
+    document.getElementById("popup").style.display = "none";
+}
+</script>
+
+</body>
+</html>
